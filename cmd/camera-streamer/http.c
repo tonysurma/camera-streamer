@@ -9,6 +9,8 @@ extern unsigned char html_webrtc_html[];
 extern unsigned int html_webrtc_html_len;
 extern unsigned char html_control_html[];
 extern unsigned int html_control_html_len;
+extern unsigned char html_camera_html[];
+extern unsigned int html_camera_html_len;
 extern camera_t *camera;
 
 extern void camera_status_json(http_worker_t *worker, FILE *stream);
@@ -95,6 +97,7 @@ http_method_t http_methods[] = {
   { "GET",  "/option", camera_post_option },
   { "POST", "/option", camera_post_option },
   { "GET",  "/status", camera_status_json },
+  { "GET",  "/camera", http_content, "text/html", html_camera_html, 0, &html_camera_html_len },
   { "GET",  "/", http_content, "text/html", html_index_html, 0, &html_index_html_len },
   { "OPTIONS", "*/", http_cors_options },
   { }

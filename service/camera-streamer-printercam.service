@@ -1,0 +1,47 @@
+;
+; Official Raspberry Pi Camera Module 3 12MP camera based on the Sony IMX708
+; https://www.raspberrypi.com/products/camera-module-3/
+;
+[Unit]
+Description=camera-streamer web camera for Pi Camera Module 3 12MP on Raspberry PI
+After=network.target
+ConditionPathExists=/sys/bus/i2c/drivers/imx708/10-001a/video4linux
+
+[Service]
+ExecStart=/usr/local/bin/camera-streamer \
+  --camera-path=/base/soc/i2c0mux/i2c@1/imx708@1a \
+  --camera-type=libcamera \
+  --camera-format=YUYV \
+  ; camera module v3
+  --camera-width=2304 --camera-height=1296 \
+  --camera-fps=30 \
+  ; use full height for all streams
+  --camera-snapshot.height=1296 \
+  --camera-video.height=1296 \
+  --camera-stream.height=1296 \
+  ; use two memory buffers to optimise usage
+  --camera-nbufs=2 \
+  ; bump brightness slightly
+  --camera-options=brightness=0.1 \
+  --camera-options=sharpness=9 \
+  --camera-options=noisereductionmode=HighQuality \
+  ; enable continuous autofocus
+  --camera-options=AfMode=2 \
+  --camera-options=AfRange=2 \
+  --http-listen=0.0.0.0 \
+  --http-port=8080 \
+  --rtsp-port
+
+DynamicUser=yes
+SupplementaryGroups=video i2c
+Restart=always
+RestartSec=10
+Nice=10
+IOSchedulingClass=idle
+IOSchedulingPriority=7
+CPUWeight=20
+AllowedCPUs=1-2
+MemoryMax=250M
+
+[Install]
+WantedBy=multi-user.target
